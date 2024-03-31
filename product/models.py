@@ -36,7 +36,7 @@ class Product(models.Model):
     title = models.CharField('Название', max_length=128)
     group = models.ForeignKey(GroupProduct, on_delete=models.CASCADE, verbose_name='Группа продукта')
     image = models.ImageField('Изображение', upload_to='media/product/image/', blank=True, null=True)
-    price = models.IntegerField('Стоимость')
+    price = models.FloatField('Стоимость')
     execution_time = models.CharField('Время работы', max_length=32, blank=True, null=True)
     number = models.IntegerField('Порядковый номер', default=1)
 
@@ -67,12 +67,12 @@ class CharacteristicProduct(models.Model):
 class CharacteristicProductItem(models.Model):
     characteristic_product = models.ForeignKey(CharacteristicProduct, on_delete=models.CASCADE, verbose_name='Характеристика продукта')
     characteristic_item = models.ForeignKey(CharacteristicItem, on_delete=models.CASCADE, verbose_name='Элемент характеристики')
-    price = models.IntegerField('Стоимость', default=0)
+    price = models.FloatField('Стоимость', default=0)
     number = models.IntegerField('Порядковый номер', default=1)
 
     class Meta:
-        verbose_name = "Характеристика продукта"
-        verbose_name_plural = "Характеристики продуктов"
+        verbose_name = "Конкретная характеристика продукта"
+        verbose_name_plural = "Конкретные характеристики продуктов"
 
     def __str__(self):
         return f"{self.characteristic_product} - {self.characteristic_item}"

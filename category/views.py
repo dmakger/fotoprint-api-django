@@ -15,6 +15,6 @@ class AllCategoryView(viewsets.ModelViewSet):
     # Получение всех категорий
     @action(methods=['get'], detail=False)
     def all(self, request):
-        categories: QuerySet[Category] = Category.objects.filter(parent=None)
+        categories: QuerySet[Category] = self.queryset.filter(parent=None)
         serializer_data = self.serializer_class(categories, many=True).data
         return Response(serializer_data, status=status.HTTP_200_OK)
