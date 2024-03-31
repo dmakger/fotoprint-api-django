@@ -1,15 +1,44 @@
 from django.db import models
 
 from category.models import Category
-from characteristic.models import CharacteristicItem, GroupCharacteristic
+from characteristic.models import CharacteristicItem, GroupCharacteristic, Characteristic
+
+
+# ОСНОВА ДЛЯ ПРОДУКТОВ. От неё продукты наследуют информацию о продукте
+class BaseProduct(models.Model):
+    title = models.CharField('Название', max_length=128)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Категория')
+
+    class Meta:
+        verbose_name = "Основа продукта"
+        verbose_name_plural = "Основы продуктов"
+
+    def __str__(self):
+        return self.title
+
+
+# ГРУППА ПРОДУКТОВ. Показывает все возможные продукты под
+class GroupProduct(models.Model):
+    title = models.CharField('Название', max_length=128)
+    base = models.ForeignKey(BaseProduct, on_delete=models.CASCADE, verbose_name='Основа продукта')
+    number = models.IntegerField('Порядковый номер', default=1)
+
+    class Meta:
+        verbose_name = "Группа продукта"
+        verbose_name_plural = "Группы продуктов"
+
+    def __str__(self):
+        return self.title
 
 
 # ПРОДУКТ
 class Product(models.Model):
     title = models.CharField('Название', max_length=128)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Категория')
-    image = models.ImageField('Изображение', upload_to='product/images/', null=True, default=None, blank=True)
-    execution_time = models.CharField('Количество рабочих дней', max_length=128, null=True, default=None, blank=True)
+    group = models.ForeignKey(GroupProduct, on_delete=models.CASCADE, verbose_name='Группа продукта')
+    image = models.ImageField('Изображение', upload_to='media/product/image/', blank=True, null=True)
+    price = models.IntegerField('Стоимость')
+    execution_time = models.CharField('Время работы', max_length=32, blank=True, null=True)
+    number = models.IntegerField('Порядковый номер', default=1)
 
     class Meta:
         verbose_name = "Продукт"
@@ -19,18 +48,32 @@ class Product(models.Model):
         return self.title
 
 
-# ПРОДУКТ к ЭЛЕМЕНТУ ХАРАКТЕРИСТИК
-class ProductToCharacteristicItem(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Проект')
-    characteristic_item = models.ForeignKey(CharacteristicItem, on_delete=models.CASCADE,
-                                            verbose_name='Элемент характеристик')
-    group_characteristic = models.ForeignKey(GroupCharacteristic, on_delete=models.CASCADE, verbose_name='Проект')
-    price = models.FloatField('Стоимость', default=0)
+# ХАРАКТЕРИСТИКА ПРОДУКТА
+class CharacteristicProduct(models.Model):
+    title = models.CharField('Название', max_length=128)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт')
+    group_characteristic = models.ForeignKey(GroupCharacteristic, on_delete=models.CASCADE, verbose_name='Группа характеристик')
     number = models.IntegerField('Порядковый номер', default=1)
 
     class Meta:
-        verbose_name = "Продукт к Характеристикам"
-        verbose_name_plural = "Продукты к Характеристикам"
+        verbose_name = "Характеристика продукта"
+        verbose_name_plural = "Характеристики продуктов"
 
     def __str__(self):
-        return f"{self.product} {self.characteristic_item}"
+        return f"{self.title}"
+
+
+# КОНКРЕТНАЯ ХАРАКТЕРИСТИКА ПРОДУКТА
+class CharacteristicProductItem(models.Model):
+    characteristic_product = models.ForeignKey(CharacteristicProduct, on_delete=models.CASCADE, verbose_name='Характеристика продукта')
+    characteristic_item = models.ForeignKey(CharacteristicItem, on_delete=models.CASCADE, verbose_name='Элемент характеристики')
+    price = models.IntegerField('Стоимость', default=0)
+    number = models.IntegerField('Порядковый номер', default=1)
+
+    class Meta:
+        verbose_name = "Характеристика продукта"
+        verbose_name_plural = "Характеристики продуктов"
+
+    def __str__(self):
+        return f"{self.characteristic_product} - {self.characteristic_item}"
+
