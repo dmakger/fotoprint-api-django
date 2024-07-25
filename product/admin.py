@@ -1,12 +1,13 @@
 from django.contrib import admin
 
-from product.forms import ProductCharacteristicCombinationForm
+from product.forms import ProductCharacteristicCombinationForm, ProductForm as ProductFormForAdmin
 from product.models import Product, ProductAdditionalService, ProductCharacteristicCombination, ProductForm, \
     ProductFormCombination
 
 
 class ProductAdmin(admin.ModelAdmin):
     """ПРОДУКТ"""
+    form = ProductFormForAdmin
     list_display = ['title', 'category', 'id']
 
 

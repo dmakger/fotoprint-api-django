@@ -43,13 +43,24 @@ class Combination(MPTTModel):
         order_insertion_by = ['characteristic']
 
     def __str__(self):
-        return self.characteristic.title
+        return self.get_full_path()
 
-    def get_full_path(self):
+    def get_full_path(self, sep=' > '):
         path = [self.characteristic.title]
         k = self.parent
         while k:
             path.append(k.characteristic.title)
             k = k.parent
-        return " > ".join(reversed(path))
+        return sep.join(reversed(path))
 
+
+class ExecutionTime(models.Model):
+    """СРОК ИСПОЛНЕНИЯ"""
+    title = models.CharField('Количество рабочих дней', max_length=128, unique=True)
+
+    class Meta:
+        verbose_name = "Срок исполнения"
+        verbose_name_plural = "Сроки исполнения"
+
+    def __str__(self):
+        return self.title

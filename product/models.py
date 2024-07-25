@@ -1,7 +1,7 @@
 from django.db import models
 
 from category.models import Category
-from characteristic.models import Combination
+from characteristic.models import Combination, ExecutionTime
 
 
 class Product(models.Model):
@@ -39,14 +39,14 @@ class ProductCharacteristicCombination(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт')
     combination = models.ForeignKey(Combination, on_delete=models.CASCADE, verbose_name='Комбинация')
     price = models.FloatField('Стоимость', default=0.)
-    execution_time = models.CharField('Срок исполнения', max_length=16)
+    execution_time = models.ForeignKey(ExecutionTime, on_delete=models.CASCADE, verbose_name='Срок исполнения', blank=True, null=True)
 
     class Meta:
         verbose_name = "Комбинация характеристик у продукта"
         verbose_name_plural = "Комбинации характеристик у продукта"
 
     def __str__(self):
-        return self.product
+        return self.product.title
 
 
 # ======{ ФОРМЫ }======
@@ -67,11 +67,11 @@ class ProductFormCombination(models.Model):
     """Форма продукта"""
     product_form = models.ForeignKey(ProductForm, on_delete=models.CASCADE, verbose_name='Форма продукта')
     combination = models.ForeignKey(Combination, on_delete=models.CASCADE, verbose_name='Комбинация')
-    execution_time = models.CharField('Срок исполнения', max_length=16)
+    execution_time = models.ForeignKey(ExecutionTime, on_delete=models.CASCADE, verbose_name='Срок исполнения', blank=True, null=True)
 
     class Meta:
         verbose_name = "Комбинация для формы продукта"
         verbose_name_plural = "Комбинации для форм продуктов"
 
     def __str__(self):
-        return self.product_form
+        return self.product_form.title

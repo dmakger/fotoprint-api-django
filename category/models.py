@@ -17,3 +17,11 @@ class Category(MPTTModel):
 
     def __str__(self):
         return self.title
+
+    def get_full_path(self, sep=' > '):
+        path = [self.title]
+        k = self.parent
+        while k:
+            path.append(k.title)
+            k = k.parent
+        return sep.join(reversed(path))
