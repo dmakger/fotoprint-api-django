@@ -53,6 +53,14 @@ class Combination(MPTTModel):
             k = k.parent
         return sep.join(reversed(path))
 
+    def get_full_children(self):
+        data = [self.characteristic]
+        k = self.parent
+        while k:
+            data.append(k.characteristic)
+            k = k.parent
+        return reversed(data)
+
 
 class ExecutionTime(models.Model):
     """СРОК ИСПОЛНЕНИЯ"""
