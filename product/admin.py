@@ -1,35 +1,35 @@
 from django.contrib import admin
-from product.models import GroupProduct, BaseProduct, Product, CharacteristicProduct, CharacteristicProductItem
+from product.models import Product, ProductAdditionalService, ProductCharacteristicCombination, ProductForm, \
+    ProductFormCombination
 
 
-# ОСНОВА ДЛЯ ПРОДУКТОВ. От неё продукты наследуют информацию о продукте
-class BaseProductAdmin(admin.ModelAdmin):
+class ProductAdmin(admin.ModelAdmin):
+    """ПРОДУКТ"""
     list_display = ['title', 'category', 'id']
 
 
-# ГРУППА ПРОДУКТОВ. Показывает все возможные продукты под
-class GroupProductAdmin(admin.ModelAdmin):
-    list_display = ['title', 'base', 'number', 'id']
+class ProductAdditionalServiceAdmin(admin.ModelAdmin):
+    """Дополнительные услуги у продуктов"""
+    list_display = ['title', 'product', 'price', 'id']
 
 
-# ПРОДУКТ
-class ProductAdmin(admin.ModelAdmin):
-    list_display = ['title', 'group', 'image', 'price', 'execution_time', 'number', 'id']
+class ProductCharacteristicCombinationAdmin(admin.ModelAdmin):
+    """Комбинации характеристик у продукта"""
+    list_display = ['product', 'combination', 'price', 'execution_time', 'id']
 
 
-# ХАРАКТЕРИСТИКА ПРОДУКТА
-class CharacteristicProductAdmin(admin.ModelAdmin):
-    list_display = ['title', 'product', 'group_characteristic', 'number', 'id']
+class ProductFormAdmin(admin.ModelAdmin):
+    """Форма продукта"""
+    list_display = ['product', 'title', 'id']
 
 
-# ХАРАКТЕРИСТИКА ПРОДУКТА
-class CharacteristicProductItemAdmin(admin.ModelAdmin):
-    list_display = ['characteristic_product', 'characteristic_item', 'price', 'number', 'id']
+class ProductFormCombinationAdmin(admin.ModelAdmin):
+    """Форма продукта"""
+    list_display = ['product_form', 'combination', 'execution_time', 'id']
 
 
-
-admin.site.register(BaseProduct, BaseProductAdmin)
-admin.site.register(GroupProduct, GroupProductAdmin)
 admin.site.register(Product, ProductAdmin)
-admin.site.register(CharacteristicProduct, CharacteristicProductAdmin)
-admin.site.register(CharacteristicProductItem, CharacteristicProductItemAdmin)
+admin.site.register(ProductAdditionalService, ProductAdditionalServiceAdmin)
+admin.site.register(ProductCharacteristicCombination, ProductCharacteristicCombinationAdmin)
+admin.site.register(ProductForm, ProductFormAdmin)
+admin.site.register(ProductFormCombination, ProductFormCombinationAdmin)

@@ -1,13 +1,10 @@
 from django.db import models
-
-
-# КАТЕГОРИЯ.
-# class Category(models.Model):
 from mptt.fields import TreeForeignKey
 from mptt.models import MPTTModel
 
 
 class Category(MPTTModel):
+    """Категория"""
     title = models.CharField('Название', max_length=128)
     parent = TreeForeignKey('self', related_name='children', null=True, blank=True, on_delete=models.CASCADE)
 

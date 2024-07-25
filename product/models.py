@@ -1,44 +1,14 @@
 from django.db import models
 
 from category.models import Category
-from characteristic.models import CharacteristicItem, GroupCharacteristic, Characteristic
+from characteristic.models import Combination
 
 
-# ОСНОВА ДЛЯ ПРОДУКТОВ. От неё продукты наследуют информацию о продукте
-class BaseProduct(models.Model):
+class Product(models.Model):
+    """ПРОДУКТ"""
     title = models.CharField('Название', max_length=128)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Категория')
-
-    class Meta:
-        verbose_name = "Основа продукта"
-        verbose_name_plural = "Основы продуктов"
-
-    def __str__(self):
-        return self.title
-
-
-# ГРУППА ПРОДУКТОВ. Показывает все возможные продукты под
-class GroupProduct(models.Model):
-    title = models.CharField('Название', max_length=128)
-    base = models.ForeignKey(BaseProduct, on_delete=models.CASCADE, verbose_name='Основа продукта')
-    number = models.IntegerField('Порядковый номер', default=1)
-
-    class Meta:
-        verbose_name = "Группа продукта"
-        verbose_name_plural = "Группы продуктов"
-
-    def __str__(self):
-        return self.title
-
-
-# ПРОДУКТ
-class Product(models.Model):
-    title = models.CharField('Название', max_length=128)
-    group = models.ForeignKey(GroupProduct, on_delete=models.CASCADE, verbose_name='Группа продукта')
     image = models.ImageField('Изображение', upload_to='media/product/image/', blank=True, null=True)
-    price = models.FloatField('Стоимость')
-    execution_time = models.CharField('Время работы', max_length=32, blank=True, null=True)
-    number = models.IntegerField('Порядковый номер', default=1)
 
     class Meta:
         verbose_name = "Продукт"
@@ -48,32 +18,60 @@ class Product(models.Model):
         return self.title
 
 
-# ХАРАКТЕРИСТИКА ПРОДУКТА
-class CharacteristicProduct(models.Model):
+# ======{ ДОПОЛНИТЕЛЬНЫЕ УСЛУГИ }======
+class ProductAdditionalService(models.Model):
+    """Дополнительные услуги у продуктов"""
     title = models.CharField('Название', max_length=128)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт')
-    group_characteristic = models.ForeignKey(GroupCharacteristic, on_delete=models.CASCADE, verbose_name='Группа характеристик')
-    number = models.IntegerField('Порядковый номер', default=1)
+    price = models.FloatField('Стоимость', default=0.)
 
     class Meta:
-        verbose_name = "Характеристика продукта"
-        verbose_name_plural = "Характеристики продуктов"
+        verbose_name = "Дополнительная услуга у продукта"
+        verbose_name_plural = "Дополнительные услуги у продуктов"
 
     def __str__(self):
-        return f"{self.title}"
+        return self.title
 
 
-# КОНКРЕТНАЯ ХАРАКТЕРИСТИКА ПРОДУКТА
-class CharacteristicProductItem(models.Model):
-    characteristic_product = models.ForeignKey(CharacteristicProduct, on_delete=models.CASCADE, verbose_name='Характеристика продукта')
-    characteristic_item = models.ForeignKey(CharacteristicItem, on_delete=models.CASCADE, verbose_name='Элемент характеристики')
-    price = models.FloatField('Стоимость', default=0)
-    number = models.IntegerField('Порядковый номер', default=1)
+# ======{ КОМБИНАЦИЯ ХАРАКТЕРИСТИК }======
+class ProductCharacteristicCombination(models.Model):
+    """Комбинации характеристик у продукта"""
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт')
+    combination = models.ForeignKey(Combination, on_delete=models.CASCADE, verbose_name='Комбинация')
+    price = models.FloatField('Стоимость', default=0.)
+    execution_time = models.CharField('Срок исполнения', max_length=16)
 
     class Meta:
-        verbose_name = "Конкретная характеристика продукта"
-        verbose_name_plural = "Конкретные характеристики продуктов"
+        verbose_name = "Комбинация характеристик у продукта"
+        verbose_name_plural = "Комбинации характеристик у продукта"
 
     def __str__(self):
-        return f"{self.characteristic_product} - {self.characteristic_item}"
+        return self.product
 
+
+# ======{ ФОРМЫ }======
+class ProductForm(models.Model):
+    """Форма продукта"""
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт')
+    title = models.CharField('Название', max_length=128)
+
+    class Meta:
+        verbose_name = "Форма продукта"
+        verbose_name_plural = "Формы продуктов"
+
+    def __str__(self):
+        return self.title
+
+
+class ProductFormCombination(models.Model):
+    """Форма продукта"""
+    product_form = models.ForeignKey(ProductForm, on_delete=models.CASCADE, verbose_name='Форма продукта')
+    combination = models.ForeignKey(Combination, on_delete=models.CASCADE, verbose_name='Комбинация')
+    execution_time = models.CharField('Срок исполнения', max_length=16)
+
+    class Meta:
+        verbose_name = "Комбинация для формы продукта"
+        verbose_name_plural = "Комбинации для форм продуктов"
+
+    def __str__(self):
+        return self.product_form

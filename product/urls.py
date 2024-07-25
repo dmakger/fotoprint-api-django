@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from product.views import AllProductView
+from product.all.all_product_view import AllProductView
 
 router = DefaultRouter()
 

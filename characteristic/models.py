@@ -1,10 +1,11 @@
 from django.db import models
+from mptt.fields import TreeForeignKey
+from mptt.models import MPTTModel
 
 
-# ГРУППА ХАРАКТЕРИСТИК. Указывает в какой группе находятся характеристики
-class GroupCharacteristic(models.Model):
+class CharacteristicGroup(models.Model):
+    """ГРУППА ХАРАКТЕРИСТИК. Указывает в какой группе находятся характеристики"""
     title = models.CharField('Название', max_length=128)
-    number = models.IntegerField('Порядковый номер', default=1)
 
     class Meta:
         verbose_name = "Группа характеристик"
@@ -14,9 +15,11 @@ class GroupCharacteristic(models.Model):
         return self.title
 
 
-# ХАРАКТЕРИСТИКИ
 class Characteristic(models.Model):
+    """ХАРАКТЕРИСТИКИ"""
+    characteristic_group = models.ForeignKey(CharacteristicGroup, on_delete=models.CASCADE, verbose_name='Группа')
     title = models.CharField('Название', max_length=128)
+    description = models.TextField('Описание', null=True, blank=True)
 
     class Meta:
         verbose_name = "Характеристика"
@@ -26,15 +29,18 @@ class Characteristic(models.Model):
         return self.title
 
 
-# ЭЛЕМЕНТЫ ХАРАКТЕРИСТИК.
-class CharacteristicItem(models.Model):
+class Combination(MPTTModel):
+    """Комбинация характеристик"""
+    characteristic_group = models.ForeignKey(CharacteristicGroup, on_delete=models.CASCADE, verbose_name='Группа')
     characteristic = models.ForeignKey(Characteristic, on_delete=models.CASCADE, verbose_name='Характеристика')
-    title = models.CharField('Название', max_length=128)
-    price = models.FloatField('Стоимость', default=0)
+    parent = TreeForeignKey('self', related_name='children', null=True, blank=True, on_delete=models.CASCADE)
 
     class Meta:
-        verbose_name = "Элемент характеристики"
-        verbose_name_plural = "Элементы характеристики"
+        verbose_name = "Комбинация характеристик"
+        verbose_name_plural = "Комбинации характеристик"
+
+    class MPTTMeta:
+        order_insertion_by = ['characteristic_group__title']
 
     def __str__(self):
-        return self.title
+        return self.characteristic.title
