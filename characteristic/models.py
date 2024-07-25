@@ -5,7 +5,7 @@ from mptt.models import MPTTModel
 
 class CharacteristicGroup(models.Model):
     """ГРУППА ХАРАКТЕРИСТИК. Указывает в какой группе находятся характеристики"""
-    title = models.CharField('Название', max_length=128)
+    title = models.CharField('Название', max_length=128, unique=True)
 
     class Meta:
         verbose_name = "Группа характеристик"
@@ -18,7 +18,7 @@ class CharacteristicGroup(models.Model):
 class Characteristic(models.Model):
     """ХАРАКТЕРИСТИКИ"""
     characteristic_group = models.ForeignKey(CharacteristicGroup, on_delete=models.CASCADE, verbose_name='Группа')
-    title = models.CharField('Название', max_length=128)
+    title = models.CharField('Название', max_length=128, unique=True)
     description = models.TextField('Описание', null=True, blank=True)
 
     class Meta:

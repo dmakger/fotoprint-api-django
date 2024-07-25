@@ -1,5 +1,5 @@
 from dal import autocomplete
-from .models import Characteristic
+from characteristic.models import Characteristic
 
 
 class CharacteristicAutocomplete(autocomplete.Select2QuerySetView):
