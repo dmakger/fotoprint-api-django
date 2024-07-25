@@ -1,4 +1,6 @@
 from django.contrib import admin
+
+from product.forms import ProductCharacteristicCombinationForm
 from product.models import Product, ProductAdditionalService, ProductCharacteristicCombination, ProductForm, \
     ProductFormCombination
 
@@ -15,6 +17,7 @@ class ProductAdditionalServiceAdmin(admin.ModelAdmin):
 
 class ProductCharacteristicCombinationAdmin(admin.ModelAdmin):
     """Комбинации характеристик у продукта"""
+    form = ProductCharacteristicCombinationForm
     list_display = ['product', 'combination', 'price', 'execution_time', 'id']
 
 

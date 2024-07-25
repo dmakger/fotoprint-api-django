@@ -45,3 +45,11 @@ class Combination(MPTTModel):
     def __str__(self):
         return self.characteristic.title
 
+    def get_full_path(self):
+        path = [self.characteristic.title]
+        k = self.parent
+        while k:
+            path.append(k.characteristic.title)
+            k = k.parent
+        return " > ".join(reversed(path))
+
