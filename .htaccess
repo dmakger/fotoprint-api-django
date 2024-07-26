@@ -1,0 +1,3 @@
+PassengerEnabled On
+PassengerPython /home/d/dmakger/api.fotoprintart.ru/venv/bin/python3.10
+PassengerFriendlyErrorPages on
