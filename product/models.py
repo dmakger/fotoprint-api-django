@@ -24,6 +24,7 @@ class ProductAdditionalService(models.Model):
     title = models.CharField('Название', max_length=128)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт')
     price = models.FloatField('Стоимость', default=0.)
+    percent = models.FloatField('Процент', default=0.)
 
     class Meta:
         verbose_name = "Дополнительная услуга у продукта"
