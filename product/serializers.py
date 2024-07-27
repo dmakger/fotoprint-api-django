@@ -1,8 +1,8 @@
 from django.db.models import QuerySet
 from rest_framework import serializers
 
-from category.serializers import CategoryTreeSerializer, CategorySerializer
-from characteristic.serializers import CombinationSerializer, ExecutionTimeSerializer, CharacteristicSerializer
+from category.serializers import CategorySerializer
+from characteristic.serializers import ExecutionTimeSerializer, CharacteristicSerializer
 from product.models import Product, ProductCharacteristicCombination, ProductFormCombination, ProductForm
 
 

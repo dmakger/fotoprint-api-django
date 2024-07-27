@@ -1,13 +1,9 @@
-from itertools import chain
-
 from django.db.models import QuerySet
 from rest_framework import serializers
 
 from category.serializers import CategoryTreeSerializer
-from characteristic.serializers import CombinationSerializer, CharacteristicSerializer
 from product.models import Product, ProductCharacteristicCombination, ProductForm
-from product.serializers import ProductCharacteristicCombinationSerializer, \
-    ProductCharacteristicAllCombinationsSerializer, ProductFormAllCombinationsSerializer, ProductAllFormSerializer
+from product.serializers import ProductCharacteristicAllCombinationsSerializer
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):

@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-wxh)5-c+wqrn*5e=#$(6co^%8ul7(w2h2n@q_4laq!po%zpy8*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "api.fotoprintart.ru", "fotoprintart.ru"]
 
 
 # Application definition
