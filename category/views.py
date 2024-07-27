@@ -4,11 +4,11 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from category.models import Category
-from category.serializers import CategorySerializer
+from category.serializers import CategoryTreeSerializer
 
 
 class AllCategoryView(viewsets.ModelViewSet):
-    serializer_class = CategorySerializer
+    serializer_class = CategoryTreeSerializer
     queryset = Category.objects.all()
     permission_classes = [permissions.AllowAny]
 

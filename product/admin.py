@@ -19,12 +19,12 @@ class ProductAdditionalServiceAdmin(admin.ModelAdmin):
 class ProductCharacteristicCombinationAdmin(admin.ModelAdmin):
     """Комбинации характеристик у продукта"""
     form = ProductCharacteristicCombinationForm
-    list_display = ['product', 'combination', 'price', 'execution_time', 'id']
+    list_display = ['product', 'title', 'combination', 'price', 'execution_time', 'show_as_product', 'id']
 
 
 class ProductFormAdmin(admin.ModelAdmin):
     """Форма продукта"""
-    list_display = ['product', 'title', 'id']
+    list_display = ['product', 'title_admin', 'title', 'id']
 
 
 class ProductFormCombinationAdmin(admin.ModelAdmin):

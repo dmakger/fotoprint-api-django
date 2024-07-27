@@ -21,7 +21,7 @@ class AllProductView(viewsets.ModelViewSet):
     @action(methods=['get'], detail=False)
     def all(self, request, **kwargs):
         # queryset = self.filter_queryset(Product.objects.all())  # Применяем фильтры
-        queryset = self.filter_queryset(ProductCharacteristicCombination.objects.all())  # Применяем фильтры
+        queryset = self.filter_queryset(ProductCharacteristicCombination.objects.filter(show_as_product=True))  # Применяем фильтры
         page = self.paginate_queryset(queryset)  # Применяем пагинацию
         if page is not None:
             serializer = self.get_serializer(page, many=True)

@@ -1,7 +1,7 @@
 from django.db.models import QuerySet
 from rest_framework import serializers
 
-from category.serializers import CategorySerializer
+from category.serializers import CategoryTreeSerializer, CategorySerializer
 from characteristic.serializers import CombinationSerializer, ExecutionTimeSerializer, CharacteristicSerializer
 from product.models import Product, ProductCharacteristicCombination, ProductFormCombination, ProductForm
 
@@ -21,13 +21,28 @@ class ProductCharacteristicCombinationSerializer(serializers.ModelSerializer):
     """
     Сериализация `ProductCharacteristicCombination`
     """
-    product = ProductSerializer()
-    combination = CombinationSerializer()
-    execution_time = ExecutionTimeSerializer()
+    title = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
+    parentId = serializers.SerializerMethodField()
+    executionTime = serializers.SerializerMethodField()
 
     class Meta:
         model = ProductCharacteristicCombination
-        fields = '__all__'
+        fields = ['id', 'title', 'price', 'image', 'parentId', 'executionTime']
+
+    def get_title(self, instance: ProductCharacteristicCombination):
+        return instance.get_title()
+
+    def get_image(self, instance: ProductCharacteristicCombination):
+        if instance.product.image and hasattr(instance.product.image, 'url'):
+            return instance.product.image.url
+        return None
+
+    def get_parentId(self, instance: ProductCharacteristicCombination):
+        return instance.product.id
+
+    def get_executionTime(self, instance: ProductCharacteristicCombination):
+        return ExecutionTimeSerializer(instance.execution_time).data
 
 
 class ProductCharacteristicAllCombinationsSerializer(serializers.ModelSerializer):
