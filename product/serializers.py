@@ -24,11 +24,13 @@ class ProductCharacteristicCombinationSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
     image = serializers.SerializerMethodField()
     parentId = serializers.SerializerMethodField()
+    category = serializers.SerializerMethodField()
     executionTime = serializers.SerializerMethodField()
+    # combinations = serializers.SerializerMethodField()
 
     class Meta:
         model = ProductCharacteristicCombination
-        fields = ['id', 'title', 'price', 'image', 'parentId', 'executionTime']
+        fields = ['id', 'title', 'price', 'image', 'parentId', 'category', 'executionTime']
 
     def get_title(self, instance: ProductCharacteristicCombination):
         return instance.get_title()
@@ -40,6 +42,9 @@ class ProductCharacteristicCombinationSerializer(serializers.ModelSerializer):
 
     def get_parentId(self, instance: ProductCharacteristicCombination):
         return instance.product.id
+
+    def get_category(self, instance: ProductCharacteristicCombination):
+        return CategorySerializer(instance.product.category).data
 
     def get_executionTime(self, instance: ProductCharacteristicCombination):
         return ExecutionTimeSerializer(instance.execution_time).data

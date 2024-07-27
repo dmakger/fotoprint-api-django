@@ -18,11 +18,14 @@ class CharacteristicSerializer(serializers.ModelSerializer):
     """
     Сериализация `Characteristic`
     """
-    characteristic_group = CharacteristicGroupSerializer()
+    characteristicGroup = serializers.SerializerMethodField()
 
     class Meta:
         model = Characteristic
-        fields = '__all__'
+        fields = ['id', 'title', 'description', 'characteristicGroup']
+
+    def get_characteristicGroup(self, instance: Characteristic):
+        return CharacteristicGroupSerializer(instance.characteristic_group).data
 
 
 class CombinationSerializer(serializers.ModelSerializer):
