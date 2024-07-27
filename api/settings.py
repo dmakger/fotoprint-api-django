@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-wxh)5-c+wqrn*5e=#$(6co^%8ul7(w2h2n@q_4laq!po%zpy8*
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-# DEBUG = True
+# DEBUG = False
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "api.fotoprintart.ru", "fotoprintart.ru"]
 
@@ -71,7 +71,25 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=2),
 }
 
-CORS_ORIGIN_WHITELIST = ["http://localhost:3000", "http://127.0.0.1:3000"]
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://api.fotoprintart.ru",
+    "https://api.fotoprintart.ru",
+    "http://fotoprintart.ru",
+    "https://fotoprintart.ru",
+]
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://api.fotoprintart.ru",
+    "https://api.fotoprintart.ru",
+    "http://fotoprintart.ru",
+    "https://fotoprintart.ru",
+]
+# конец настроек JWT токена
 # конец настроек JWT токена
 
 # настройки rest framework
@@ -164,9 +182,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static"),
-)
+# STATICFILES_DIRS = (
+#     os.path.join(BASE_DIR, "static"),
+# )
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
