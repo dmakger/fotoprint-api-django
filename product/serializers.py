@@ -52,16 +52,21 @@ class ProductCharacteristicAllCombinationsSerializer(serializers.ModelSerializer
     """
     # product = ProductSerializer()
     characteristics = serializers.SerializerMethodField()
+    forms = serializers.SerializerMethodField()
     execution_time = ExecutionTimeSerializer()
 
     class Meta:
         model = ProductCharacteristicCombination
         # fields = ['id', 'product', 'price', 'characteristics', 'execution_time']
-        fields = ['id', 'price', 'characteristics', 'execution_time']
+        fields = ['id', 'price', 'characteristics', 'forms', 'execution_time']
 
     def get_characteristics(self, instance: ProductCharacteristicCombination):
         characteristics = instance.combination.get_full_children()
         return CharacteristicSerializer(characteristics, many=True).data
+
+    def get_forms(self, instance: ProductCharacteristicCombination):
+        forms = ProductForm.objects.filter(product=instance)
+        return ProductAllFormSerializer(forms, many=True).data
 
 
 class ProductFormAllCombinationsSerializer(serializers.ModelSerializer):
