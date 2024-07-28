@@ -3,6 +3,7 @@ from rest_framework import viewsets, permissions, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from lib.pagination import CustomPagination
 from product.filter import ProductCharacteristicCombinationFilter
 from product.models import Product, ProductCharacteristicCombination
 from product.serializers import ProductSerializer, ProductCharacteristicCombinationSerializer
@@ -16,6 +17,7 @@ class AllProductView(viewsets.ModelViewSet):
     filterset_class = ProductCharacteristicCombinationFilter
     ordering_fields = ['product__title', 'price']  # Поля для сортировки
     ordering = ['product__title']
+    pagination_class = CustomPagination
 
     # Получение всех продуктов
     @action(methods=['get'], detail=False)

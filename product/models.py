@@ -8,7 +8,7 @@ class Product(models.Model):
     """ПРОДУКТ"""
     title = models.CharField('Название', max_length=128)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Категория')
-    image = models.ImageField('Изображение', upload_to='media/product/image/', blank=True, null=True)
+    image = models.ImageField('Изображение', upload_to='product/image/', blank=True, null=True)
 
     class Meta:
         verbose_name = "Продукт"
@@ -42,6 +42,7 @@ class ProductCharacteristicCombination(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт')
     combination = models.ForeignKey(Combination, on_delete=models.CASCADE, verbose_name='Комбинация')
     price = models.FloatField('Стоимость', default=0.)
+    image = models.ImageField('Изображение', upload_to='productCombination/image/', blank=True, null=True)
     show_as_product = models.BooleanField("Отображать как продукт", default=True)
     execution_time = models.ForeignKey(ExecutionTime, on_delete=models.CASCADE, verbose_name='Срок исполнения', blank=True, null=True)
 
@@ -56,6 +57,13 @@ class ProductCharacteristicCombination(models.Model):
         if self.title:
             return self.title
         return self.product.title
+
+    def get_image(self):
+        if self.image and hasattr(self.image, 'url'):
+            return self.image.url
+        if self.product.image and hasattr(self.product.image, 'url'):
+            return self.product.image.url
+        return None
 
     def save(self, *args, **kwargs):
         if not self.title:

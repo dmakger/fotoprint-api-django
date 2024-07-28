@@ -36,9 +36,7 @@ class ProductCharacteristicCombinationSerializer(serializers.ModelSerializer):
         return instance.get_title()
 
     def get_image(self, instance: ProductCharacteristicCombination):
-        if instance.product.image and hasattr(instance.product.image, 'url'):
-            return instance.product.image.url
-        return None
+        return instance.get_image()
 
     def get_parentId(self, instance: ProductCharacteristicCombination):
         return instance.product.id
@@ -51,6 +49,30 @@ class ProductCharacteristicCombinationSerializer(serializers.ModelSerializer):
 
 
 class ProductCharacteristicAllCombinationsSerializer(serializers.ModelSerializer):
+    """
+    Сериализация `ProductCharacteristicCombination`.
+    Добавляет `characteristics` список всех характеристик в данной комбинации
+    """
+    # product = ProductSerializer()
+    characteristics = serializers.SerializerMethodField()
+    forms = serializers.SerializerMethodField()
+    execution_time = ExecutionTimeSerializer()
+
+    class Meta:
+        model = ProductCharacteristicCombination
+        # fields = ['id', 'product', 'price', 'characteristics', 'execution_time']
+        fields = ['id', 'price', 'characteristics', 'forms', 'execution_time']
+
+    def get_characteristics(self, instance: ProductCharacteristicCombination):
+        characteristics = instance.combination.get_full_children()
+        return CharacteristicSerializer(characteristics, many=True).data
+
+    def get_forms(self, instance: ProductCharacteristicCombination):
+        forms = ProductForm.objects.filter(product=instance)
+        return ProductAllFormSerializer(forms, many=True).data
+
+
+class ProductCombinationSerializer(serializers.ModelSerializer):
     """
     Сериализация `ProductCharacteristicCombination`.
     Добавляет `characteristics` список всех характеристик в данной комбинации
