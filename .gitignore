@@ -15,9 +15,6 @@ __pycache__/
 # Статические файлы
 staticfiles/
 
-# Медиа файлы
-media/
-
 # IDE файлы
 .vscode/
 .idea/
