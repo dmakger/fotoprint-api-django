@@ -18,7 +18,7 @@ class ProductCombinationsDetailView(generics.RetrieveAPIView):
         return Response(serializer.data)
 
 
-class ProductCombinationsView(generics.RetrieveAPIView):
+class ProductCombinationsTestView(generics.RetrieveAPIView):
     serializer_class = ProductCombinationSerializer
     queryset = ProductCharacteristicCombination.objects.all()
     permission_classes = [permissions.AllowAny]
