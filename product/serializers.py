@@ -1,8 +1,10 @@
 from django.db.models import QuerySet
 from rest_framework import serializers
+from rest_framework_recursive.fields import RecursiveField
 
 from category.serializers import CategorySerializer
-from characteristic.serializers import ExecutionTimeSerializer, CharacteristicSerializer
+from characteristic.models import Combination, Characteristic
+from characteristic.serializers import ExecutionTimeSerializer, CharacteristicSerializer, CharacteristicGroupSerializer
 from product.models import Product, ProductCharacteristicCombination, ProductFormCombination, ProductForm
 
 
@@ -79,21 +81,35 @@ class ProductCombinationSerializer(serializers.ModelSerializer):
     """
     # product = ProductSerializer()
     characteristics = serializers.SerializerMethodField()
-    forms = serializers.SerializerMethodField()
     execution_time = ExecutionTimeSerializer()
 
     class Meta:
         model = ProductCharacteristicCombination
         # fields = ['id', 'product', 'price', 'characteristics', 'execution_time']
-        fields = ['id', 'price', 'characteristics', 'forms', 'execution_time']
+        fields = ['id', 'price', 'characteristics', 'execution_time']
 
     def get_characteristics(self, instance: ProductCharacteristicCombination):
-        characteristics = instance.combination.get_full_children()
-        return CharacteristicSerializer(characteristics, many=True).data
+        combinations = Combination.objects.filter(
+            productcharacteristiccombination__product=instance.product
+        ).distinct()
+        print('qwe', instance, combinations)
+        return CombinationCharacteristicRecursiveSerializer(combinations, many=True).data
+        # characteristics = instance.combination.get_full_children()
+        # return CharacteristicSerializer(characteristics, many=True).data
 
-    def get_forms(self, instance: ProductCharacteristicCombination):
-        forms = ProductForm.objects.filter(product=instance)
-        return ProductAllFormSerializer(forms, many=True).data
+
+class CombinationCharacteristicRecursiveSerializer(serializers.ModelSerializer):
+    """
+    Сериализация `Combination`.
+    Добавляет `characteristics` список всех характеристик в данной комбинации
+    """
+    # product = ProductSerializer()
+    characteristic = CharacteristicSerializer()
+    children = RecursiveField(many=True)
+
+    class Meta:
+        model = Combination
+        fields = ['id', 'characteristic', 'children']
 
 
 class ProductFormAllCombinationsSerializer(serializers.ModelSerializer):

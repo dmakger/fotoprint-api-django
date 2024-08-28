@@ -15,5 +15,5 @@ urlpatterns = [
     path("all/", AllProductView.as_view({'get': 'all'})),
     path('all/<int:pk>/', ProductDetailView.as_view(), name='product-detail'),
     path('combinations/<int:pk>/', ProductCombinationsDetailView.as_view(), name='product-combinations'),
-    path('combinations/test/<int:pk>/', ProductCombinationsTestView.as_view(), name='product-combinations-test'),
+    path('combinations/test/<int:pk>/', ProductCombinationsTestView.as_view({'post': 'get_characteristics'})),
 ]

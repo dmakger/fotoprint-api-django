@@ -1,4 +1,5 @@
-from rest_framework import permissions, generics
+from rest_framework import permissions, generics, viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from product.models import Product, ProductCharacteristicCombination
@@ -18,12 +19,14 @@ class ProductCombinationsDetailView(generics.RetrieveAPIView):
         return Response(serializer.data)
 
 
-class ProductCombinationsTestView(generics.RetrieveAPIView):
+class ProductCombinationsTestView(viewsets.ModelViewSet):
     serializer_class = ProductCombinationSerializer
     queryset = ProductCharacteristicCombination.objects.all()
     permission_classes = [permissions.AllowAny]
 
-    def retrieve(self, request, *args, **kwargs):
+    @action(methods=['post'], detail=False)
+    def get_characteristics(self, request, *args, **kwargs):
         instance = self.get_object()
+        print(request.data, args, kwargs, instance)
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
