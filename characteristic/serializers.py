@@ -28,7 +28,7 @@ class CharacteristicSerializer(serializers.ModelSerializer):
         return CharacteristicGroupSerializer(instance.characteristic_group).data
 
 
-class CombinationSerializer(serializers.ModelSerializer):
+class CombinationRecursiveSerializer(serializers.ModelSerializer):
     """
     Сериализация `Combination`
     """
@@ -39,6 +39,21 @@ class CombinationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Combination
         fields = ['id', 'characteristic_group', 'characteristic', 'children']
+
+
+class CombinationSerializer(serializers.ModelSerializer):
+    """
+    Сериализация `Combination`.
+    """
+    isActive = serializers.SerializerMethodField()
+    characteristic = CharacteristicSerializer()
+
+    class Meta:
+        model = Combination
+        fields = ['id', 'isActive', 'characteristic']
+
+    def get_isActive(self, instance):
+        return self.context.get('active_id', False) == instance.id
 
 
 class ExecutionTimeSerializer(serializers.ModelSerializer):

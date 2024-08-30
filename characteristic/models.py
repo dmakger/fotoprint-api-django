@@ -61,6 +61,18 @@ class Combination(MPTTModel):
             k = k.parent
         return reversed(data)
 
+    def get_children_as_mtrx(self):
+        from characteristic.types import CombinationWithActiveType
+        combinations = []
+        active_ids = []
+        current = self
+        while current.parent:
+            combinations.append(Combination.objects.filter(parent=current.parent))
+            active_ids.append(current.pk)
+            current = current.parent
+        active_ids.append(current.pk)
+        return CombinationWithActiveType(combinations=combinations, active_ids=active_ids)
+
 
 class ExecutionTime(models.Model):
     """СРОК ИСПОЛНЕНИЯ"""

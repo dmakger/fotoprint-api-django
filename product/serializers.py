@@ -1,10 +1,14 @@
 from django.db.models import QuerySet
+from mptt.querysets import TreeQuerySet
 from rest_framework import serializers
 from rest_framework_recursive.fields import RecursiveField
 
 from category.serializers import CategorySerializer
 from characteristic.models import Combination, Characteristic
-from characteristic.serializers import ExecutionTimeSerializer, CharacteristicSerializer, CharacteristicGroupSerializer
+from characteristic.serializers import ExecutionTimeSerializer, CharacteristicSerializer, CharacteristicGroupSerializer, \
+    CombinationSerializer
+from characteristic.types import CombinationWithActiveType
+from lib.combinations_lib import get_parents_combination_by_product
 from product.models import Product, ProductCharacteristicCombination, ProductFormCombination, ProductForm
 
 
@@ -80,36 +84,29 @@ class ProductCombinationSerializer(serializers.ModelSerializer):
     Добавляет `characteristics` список всех характеристик в данной комбинации
     """
     # product = ProductSerializer()
-    characteristics = serializers.SerializerMethodField()
+    combinations = serializers.SerializerMethodField()
     execution_time = ExecutionTimeSerializer()
 
     class Meta:
         model = ProductCharacteristicCombination
         # fields = ['id', 'product', 'price', 'characteristics', 'execution_time']
-        fields = ['id', 'price', 'characteristics', 'execution_time']
+        fields = ['id', 'price', 'image', 'combinations', 'execution_time']
 
-    def get_characteristics(self, instance: ProductCharacteristicCombination):
-        combinations = Combination.objects.filter(
-            productcharacteristiccombination__product=instance.product
-        ).distinct()
-        print('qwe', instance, combinations)
-        return CombinationCharacteristicRecursiveSerializer(combinations, many=True).data
-        # characteristics = instance.combination.get_full_children()
-        # return CharacteristicSerializer(characteristics, many=True).data
+    def get_combinations(self, instance: ProductCharacteristicCombination):
+        res: CombinationWithActiveType = instance.combination.get_children_as_mtrx()
+        active_ids = res.active_ids
+        combinations = res.combinations + [get_parents_combination_by_product(instance.product)]
 
-
-class CombinationCharacteristicRecursiveSerializer(serializers.ModelSerializer):
-    """
-    Сериализация `Combination`.
-    Добавляет `characteristics` список всех характеристик в данной комбинации
-    """
-    # product = ProductSerializer()
-    characteristic = CharacteristicSerializer()
-    children = RecursiveField(many=True)
-
-    class Meta:
-        model = Combination
-        fields = ['id', 'characteristic', 'children']
+        serializers_data = []
+        for i in range(len(combinations)):
+            serializers_data.append(
+                CombinationSerializer(
+                    combinations[i],
+                    context={'active_id': active_ids[i]},
+                    many=True
+                ).data
+            )
+        return reversed(serializers_data)
 
 
 class ProductFormAllCombinationsSerializer(serializers.ModelSerializer):

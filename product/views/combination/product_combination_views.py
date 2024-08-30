@@ -19,14 +19,15 @@ class ProductCombinationsDetailView(generics.RetrieveAPIView):
         return Response(serializer.data)
 
 
-class ProductCombinationsTestView(viewsets.ModelViewSet):
+class ProductCombinationsView(viewsets.ModelViewSet):
     serializer_class = ProductCombinationSerializer
     queryset = ProductCharacteristicCombination.objects.all()
     permission_classes = [permissions.AllowAny]
 
-    @action(methods=['post'], detail=False)
+    @action(methods=['get'], detail=False)
     def get_characteristics(self, request, *args, **kwargs):
-        instance = self.get_object()
-        print(request.data, args, kwargs, instance)
+        instance = self.get_object()  # Получаем объект, с которым работаем
+        # Передаем данные из request.data в сериализатор
         serializer = self.get_serializer(instance)
+
         return Response(serializer.data)

@@ -65,6 +65,7 @@ class ProductCharacteristicCombination(models.Model):
             return self.product.image.url
         return None
 
+
     def save(self, *args, **kwargs):
         if not self.title:
             self.title = f"{self.product.title}: {self.combination.characteristic.title}"
