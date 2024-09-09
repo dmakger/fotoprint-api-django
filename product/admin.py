@@ -29,7 +29,7 @@ class ProductFormAdmin(admin.ModelAdmin):
 
 class ProductFormCombinationAdmin(admin.ModelAdmin):
     """Форма продукта"""
-    list_display = ['product_form', 'combination', 'execution_time', 'id']
+    list_display = ['product_form', 'combination', 'price', 'execution_time', 'id']
 
 
 admin.site.register(Product, ProductAdmin)
