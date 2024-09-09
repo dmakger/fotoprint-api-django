@@ -65,13 +65,20 @@ class Combination(MPTTModel):
         from characteristic.types import CombinationWithActiveType
         combinations = []
         active_ids = []
+        active_characteristic_ids = []
         current = self
         while current.parent:
             combinations.append(Combination.objects.filter(parent=current.parent))
             active_ids.append(current.pk)
+            active_characteristic_ids.append(current.characteristic.id)
             current = current.parent
         active_ids.append(current.pk)
-        return CombinationWithActiveType(combinations=combinations, active_ids=active_ids)
+        active_characteristic_ids.append(current.characteristic.pk)
+        return CombinationWithActiveType(
+            combinations=combinations,
+            active_ids=active_ids,
+            active_characteristic_ids=active_characteristic_ids
+        )
 
 
 class ExecutionTime(models.Model):

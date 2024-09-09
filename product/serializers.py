@@ -8,7 +8,8 @@ from characteristic.models import Combination, Characteristic
 from characteristic.serializers import ExecutionTimeSerializer, CharacteristicSerializer, CharacteristicGroupSerializer, \
     CombinationSerializer
 from characteristic.types import CombinationWithActiveType
-from lib.combinations_lib import get_parents_combination_by_product
+from lib.combinations_lib import get_parents_combination_by_product, get_combinations_as_dict_id, \
+    get_product_combination_id
 from product.models import Product, ProductCharacteristicCombination, ProductFormCombination, ProductForm
 
 
@@ -94,18 +95,27 @@ class ProductCombinationSerializer(serializers.ModelSerializer):
 
     def get_combinations(self, instance: ProductCharacteristicCombination):
         res: CombinationWithActiveType = instance.combination.get_children_as_mtrx()
-        active_ids = res.active_ids
         combinations = res.combinations + [get_parents_combination_by_product(instance.product)]
-
+        product_combination_id_to_combination_ids = get_combinations_as_dict_id(instance.product)
+        active_ids = res.active_ids
+        active_characteristic_ids = res.active_characteristic_ids
         serializers_data = []
         for i in range(len(combinations)):
-            serializers_data.append(
-                CombinationSerializer(
-                    combinations[i],
-                    context={'active_id': active_ids[i]},
-                    many=True
-                ).data
-            )
+            combination_serializer_data = CombinationSerializer(
+                combinations[i],
+                context={'active_id': active_ids[i]},
+                many=True
+            ).data
+            updated_serializer_data = []
+            for sd in combination_serializer_data:
+                current_ids = [*active_characteristic_ids[:i], sd['characteristic']['id'], *active_characteristic_ids[i+1:]]
+                updated_serializer_data.append({
+                    **sd,
+                    'productCombinationId': get_product_combination_id(product_combination_id_to_combination_ids,
+                                                                  current_ids)
+                 })
+            # print([{"id": x['id'], "title": x['characteristic']['title']} for x in updated_serializer_data])
+            serializers_data.append(updated_serializer_data)
         return reversed(serializers_data)
 
 

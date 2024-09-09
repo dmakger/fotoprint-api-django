@@ -18,3 +18,4 @@ class CombineType:
 class CombinationWithActiveType:
     combinations: List[QuerySet[Combination]] = field(default_factory=list)
     active_ids: List[int] = field(default_factory=list)
+    active_characteristic_ids: List[int] = field(default_factory=list)
