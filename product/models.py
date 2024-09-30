@@ -97,7 +97,7 @@ class ProductFormCombination(models.Model):
     """Форма продукта"""
     product_form = models.ForeignKey(ProductForm, on_delete=models.CASCADE, verbose_name='Форма продукта')
     combination = models.ForeignKey(Combination, on_delete=models.CASCADE, verbose_name='Комбинация')
-    price = models.FloatField('Стоимость', default=0.)
+    price = models.FloatField('Стоимость', null=True, default=None)
     execution_time = models.ForeignKey(ExecutionTime, on_delete=models.CASCADE, verbose_name='Срок исполнения', blank=True, null=True)
 
     class Meta:

@@ -1,5 +1,8 @@
+from django.db.models import QuerySet
 from rest_framework import serializers
 
+from characteristic.admin import CombinationAdmin
+from characteristic.models import Combination
 from characteristic.serializers import ExecutionTimeSerializer
 from product.models import ProductForm, ProductFormCombination
 
@@ -16,7 +19,12 @@ class ProductFormSerializer(serializers.ModelSerializer):
         model = ProductForm
         fields = ['id', 'title', 'forms']
 
-    def get_forms(self, instance):
+    def get_forms(self, instance: ProductForm):
+        pf_combinations: QuerySet[ProductFormCombination] = ProductFormCombination.objects.filter(product_form=instance)
+        # combinations = Combination.objects.filter(productformcombination__product_form=instance)
+        # print(combinations)
+        for x in pf_combinations:
+            print(x.combination.get_full_children())
         return []
 
 

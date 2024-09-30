@@ -59,7 +59,7 @@ class Combination(MPTTModel):
         while k:
             data.append(k.characteristic)
             k = k.parent
-        return reversed(data)
+        return list(reversed(data))
 
     def get_children_as_mtrx(self):
         from characteristic.types import CombinationWithActiveType
