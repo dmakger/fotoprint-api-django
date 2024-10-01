@@ -24,4 +24,4 @@ def add_characteristics_in_form(node, characteristics, form_data):
         existing_child['form'] = form_data
     else:
         # Идем дальше вглубь характеристик
-        add_characteristics(existing_child, characteristics[1:], form_data)
+        add_characteristics_in_form(existing_child, characteristics[1:], form_data)
