@@ -94,6 +94,7 @@ class ProductCombinationSerializer(serializers.ModelSerializer):
     Добавляет `characteristics` список всех характеристик в данной комбинации
     """
     # product = ProductSerializer()
+    image = serializers.SerializerMethodField()
     combinations = serializers.SerializerMethodField()
     execution_time = ExecutionTimeSerializer()
 
@@ -101,6 +102,9 @@ class ProductCombinationSerializer(serializers.ModelSerializer):
         model = ProductCharacteristicCombination
         # fields = ['id', 'product', 'price', 'characteristics', 'execution_time']
         fields = ['id', 'price', 'image', 'combinations', 'execution_time']
+
+    def get_image(self, instance: ProductCharacteristicCombination):
+        return instance.get_main_image()
 
     def get_combinations(self, instance: ProductCharacteristicCombination):
         res: CombinationWithActiveType = instance.combination.get_children_as_mtrx()
