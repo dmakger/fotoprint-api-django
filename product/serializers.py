@@ -3,6 +3,7 @@ from mptt.querysets import TreeQuerySet
 from rest_framework import serializers
 from rest_framework_recursive.fields import RecursiveField
 
+from api.settings import MEDIA_URL
 from category.serializers import CategorySerializer
 from characteristic.models import Combination, Characteristic
 from characteristic.serializers import ExecutionTimeSerializer, CharacteristicSerializer, CharacteristicGroupSerializer, \
@@ -10,7 +11,8 @@ from characteristic.serializers import ExecutionTimeSerializer, CharacteristicSe
 from characteristic.types import CombinationWithActiveType
 from lib.combinations_lib import get_parents_combination_by_product, get_combinations_as_dict_id, \
     get_product_combination_id
-from product.models import Product, ProductCharacteristicCombination, ProductFormCombination, ProductForm
+from product.models import Product, ProductCharacteristicCombination, ProductFormCombination, ProductForm, \
+    ProductCharacteristicCombinationImage
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -30,6 +32,7 @@ class ProductCharacteristicCombinationSerializer(serializers.ModelSerializer):
     """
     title = serializers.SerializerMethodField()
     image = serializers.SerializerMethodField()
+    images = serializers.SerializerMethodField()
     parentId = serializers.SerializerMethodField()
     category = serializers.SerializerMethodField()
     executionTime = serializers.SerializerMethodField()
@@ -37,13 +40,19 @@ class ProductCharacteristicCombinationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductCharacteristicCombination
-        fields = ['id', 'title', 'price', 'image', 'parentId', 'category', 'executionTime']
+        fields = ['id', 'title', 'price', 'image', 'images', 'parentId', 'category', 'executionTime']
 
     def get_title(self, instance: ProductCharacteristicCombination):
         return instance.get_title()
 
     def get_image(self, instance: ProductCharacteristicCombination):
-        return instance.get_image()
+        return instance.get_main_image()
+
+    def get_images(self, instance: ProductCharacteristicCombination):
+        images = ProductCharacteristicCombinationImage.objects.filter(
+            product_characteristic_combination=instance, is_main=False
+        ).values_list('image', flat=True)
+        return [f"{MEDIA_URL}{x}" for x in images]
 
     def get_parentId(self, instance: ProductCharacteristicCombination):
         return instance.product.id

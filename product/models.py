@@ -24,6 +24,7 @@ class ProductAdditionalService(models.Model):
     title = models.CharField('Название', max_length=128)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт')
     price = models.FloatField('Стоимость', default=0.)
+
     # percent = models.FloatField('Процент', default=0.)
 
     class Meta:
@@ -42,9 +43,9 @@ class ProductCharacteristicCombination(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт')
     combination = models.ForeignKey(Combination, on_delete=models.CASCADE, verbose_name='Комбинация')
     price = models.FloatField('Стоимость', default=0.)
-    image = models.ImageField('Изображение', upload_to='productCombination/image/', blank=True, null=True)
     show_as_product = models.BooleanField("Отображать как продукт", default=True)
-    execution_time = models.ForeignKey(ExecutionTime, on_delete=models.CASCADE, verbose_name='Срок исполнения', blank=True, null=True)
+    execution_time = models.ForeignKey(ExecutionTime, on_delete=models.CASCADE, verbose_name='Срок исполнения',
+                                       blank=True, null=True)
 
     class Meta:
         verbose_name = "Комбинация характеристик у продукта"
@@ -58,17 +59,52 @@ class ProductCharacteristicCombination(models.Model):
             return self.title
         return self.product.title
 
-    def get_image(self):
-        if self.image and hasattr(self.image, 'url'):
-            return self.image.url
+    def get_main_image(self):
+        images = ProductCharacteristicCombinationImage.objects.filter(
+            product_characteristic_combination=self,
+            is_main=True
+        )
+        if len(images) > 0:
+            return images[0].image.url
         if self.product.image and hasattr(self.product.image, 'url'):
             return self.product.image.url
         return None
 
-
     def save(self, *args, **kwargs):
         if not self.title:
             self.title = f"{self.product.title}: {self.combination.characteristic.title}"
+        super().save(*args, **kwargs)
+
+
+class ProductCharacteristicCombinationImage(models.Model):
+    """Изображения характеристик Продукта"""
+    product_characteristic_combination = models.ForeignKey(ProductCharacteristicCombination, on_delete=models.CASCADE,
+                                                           verbose_name='Продукт')
+    image = models.ImageField('Изображение', upload_to='product/image/')
+    is_main = models.BooleanField('Это главное изображение?', default=False)
+
+    class Meta:
+        verbose_name = "Изображения продуктов"
+        verbose_name_plural = "Изображения продуктов"
+
+    def __str__(self):
+        return f"{self.product_characteristic_combination.id} - {self.image.url}"
+
+    def save(self, *args, **kwargs):
+        # Убедись, что self — это экземпляр модели ProductCharacteristicCombination
+        images = ProductCharacteristicCombinationImage.objects.filter(
+            product_characteristic_combination=self.product_characteristic_combination,
+            is_main=True
+        )
+
+        if self.is_main and len(images) > 0:
+            for obj in images:
+                obj.is_main = False
+                obj.save()
+        elif len(images) == 0:
+            self.is_main = True
+
+        # Сохранение объекта
         super().save(*args, **kwargs)
 
 
@@ -98,7 +134,8 @@ class ProductFormCombination(models.Model):
     product_form = models.ForeignKey(ProductForm, on_delete=models.CASCADE, verbose_name='Форма продукта')
     combination = models.ForeignKey(Combination, on_delete=models.CASCADE, verbose_name='Комбинация')
     price = models.FloatField('Стоимость', null=True, default=None)
-    execution_time = models.ForeignKey(ExecutionTime, on_delete=models.CASCADE, verbose_name='Срок исполнения', blank=True, null=True)
+    execution_time = models.ForeignKey(ExecutionTime, on_delete=models.CASCADE, verbose_name='Срок исполнения',
+                                       blank=True, null=True)
 
     class Meta:
         verbose_name = "Комбинация для формы продукта"
